@@ -33,19 +33,19 @@ namespace QuantConnect.DataSource
         /// The number of NFT transaction made within this blockchain
         /// </summary>
         [ProtoMember(10)]
-        public decimal TotalTransactions { get; set; }
+        public int TotalTransactions { get; set; }
 
         /// <summary>
         /// The number of unique buyers of NFT within this blockchain
         /// </summary>
         [ProtoMember(11)]
-        public decimal UniqueBuyers { get; set; }
+        public int UniqueBuyers { get; set; }
 
         /// <summary>
         /// The number of unique sellers of NFT within this blockchain
         /// </summary>
         [ProtoMember(12)]
-        public decimal UniqueSellers { get; set; }
+        public int UniqueSellers { get; set; }
 
         /// <summary>
         /// The total transaction value (in USD) of NFT within this blockchain
@@ -90,9 +90,9 @@ namespace QuantConnect.DataSource
             return new CryptoSlamNFTSales()
             {
                 Symbol = config.Symbol,
-                TotalTransactions = decimal.Parse(csv[1], System.Globalization.NumberStyles.Float),
-                UniqueBuyers = decimal.Parse(csv[2], System.Globalization.NumberStyles.Float),
-                UniqueSellers = decimal.Parse(csv[3], System.Globalization.NumberStyles.Float),
+                TotalTransactions = int.Parse(csv[1], System.Globalization.NumberStyles.Float),
+                UniqueBuyers = int.Parse(csv[2], System.Globalization.NumberStyles.Float),
+                UniqueSellers = int.Parse(csv[3], System.Globalization.NumberStyles.Float),
                 TotalPriceUSD = decimal.Parse(csv[4], System.Globalization.NumberStyles.Float),
                 Time = parsedDate - TimeSpan.FromHours(28),      // Consolidated at 00:00 UTC for the previous day data
                 EndTime = parsedDate - TimeSpan.FromHours(4)
