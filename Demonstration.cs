@@ -40,7 +40,7 @@ namespace QuantConnect.DataLibrary.Tests
             SetEndDate(2020, 10, 11);    //Set End Date
             SetCash(10000);
             
-            _ethSymbol = AddCrypto("ETHUSD", Resolution.Minute).Symbol; 
+            _ethSymbol = AddCrypto("ETHUSD", Resolution.Minute, Market.Bitfinex).Symbol; 
             // Requesting data
             _nftSalesSymbol = AddData<CryptoSlamNFTSales>(_ethSymbol).Symbol;
 
