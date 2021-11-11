@@ -120,10 +120,10 @@ namespace QuantConnect.DataSource
         /// <summary>
         /// Indicates whether the data source is tied to an underlying symbol and requires that corporate events be applied to it as well, such as renames and delistings
         /// </summary>
-        /// <returns>true</returns>
+        /// <returns>false</returns>
         public override bool RequiresMapping()
         {
-            return true;
+            return false;
         }
 
         /// <summary>
