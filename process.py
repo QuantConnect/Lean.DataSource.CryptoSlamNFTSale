@@ -31,7 +31,7 @@ def download_cryptoslam_nftsales(ticker: str):
             daily_result = [x['dailySummaries'] for x in result.values()]
             daily_result_dict = {key: value for d in daily_result for key, value in d.items()}
 
-            with open(destination_folder / f"{ticker.lower()}.csv"), "w", newline='', encoding='utf-8') as csv_file:
+            with open(destination_folder / f"{ticker.lower()}.csv", "w", newline='', encoding='utf-8') as csv_file:
                 writer = csv.writer(csv_file)
                 for key, value in daily_result_dict.items():
                     writer.writerow([key, value['totalTransactions'], value['uniqueBuyers'], value['uniqueSellers'], value['totalPriceUSD']])
