@@ -87,12 +87,15 @@ namespace QuantConnect.DataLibrary.Tests
 
         private BaseData CreateNewInstance()
         {
-            return new MyCustomDataType
+            return new CryptoSlamNFTSales
             {
                 Symbol = Symbol.Empty,
                 Time = DateTime.Today,
                 DataType = MarketDataType.Base,
-                SomeCustomProperty = "This is some market related information"
+                TotalTransactions = 100,
+                UniqueBuyers = 20,
+                UniqueSellers = 15,
+                TotalPriceUSD = 150000m
             };
         }
     }
