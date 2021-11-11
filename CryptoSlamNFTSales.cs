@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -24,16 +24,34 @@ using System.Collections.Generic;
 namespace QuantConnect.DataSource
 {
     /// <summary>
-    /// Example custom data type
+    /// CryptoSlam NFT Sales dataset
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
-    public class MyCustomDataType : BaseData
+    public class CryptoSlamNFTSales : BaseData
     {
         /// <summary>
-        /// Some custom data property
+        /// The number of NFT transaction made within this blockchain
         /// </summary>
-        [ProtoMember(2000)]
-        public string SomeCustomProperty { get; set; }
+        [ProtoMember(10)]
+        public int TotalTransactions { get; set; }
+
+        /// <summary>
+        /// The number of unique buyers of NFT within this blockchain
+        /// </summary>
+        [ProtoMember(11)]
+        public int UniqueBuyers { get; set; }
+
+        /// <summary>
+        /// The number of unique sellers of NFT within this blockchain
+        /// </summary>
+        [ProtoMember(12)]
+        public int UniqueSellers { get; set; }
+
+        /// <summary>
+        /// The total transaction value (in USD) of NFT within this blockchain
+        /// </summary>
+        [ProtoMember(13)]
+        public decimal TotalPriceUSD { get; set; }
 
         /// <summary>
         /// Return the URL string source of the file. This will be converted to a stream
@@ -48,7 +66,8 @@ namespace QuantConnect.DataSource
                 Path.Combine(
                     Globals.DataFolder,
                     "alternative",
-                    "mycustomdatatype",
+                    "cryptoslam",
+                    "nftsales",
                     $"{config.Symbol.Value.ToLowerInvariant()}.csv"
                 ),
                 SubscriptionTransportMedium.LocalFile
@@ -67,13 +86,16 @@ namespace QuantConnect.DataSource
         {
             var csv = line.Split(',');
 
-            var parsedDate = Parse.DateTimeExact(csv[0], "yyyyMMdd");
-            return new MyCustomDataType
+            var parsedDate = Parse.DateTimeExact(csv[0], "yyyy-MM-dd'T'HH:mm:ss");
+            return new CryptoSlamNFTSales()
             {
                 Symbol = config.Symbol,
-                SomeCustomProperty = csv[1],
-                Time = parsedDate,
-                EndTime = parsedDate + TimeSpan.FromDays(1)
+                TotalTransactions = int.Parse(csv[1], System.Globalization.NumberStyles.Float),
+                UniqueBuyers = int.Parse(csv[2], System.Globalization.NumberStyles.Float),
+                UniqueSellers = int.Parse(csv[3], System.Globalization.NumberStyles.Float),
+                TotalPriceUSD = decimal.Parse(csv[4], System.Globalization.NumberStyles.Float),
+                Time = parsedDate - TimeSpan.FromDays(1),
+                EndTime = parsedDate
             };
         }
 
@@ -83,12 +105,15 @@ namespace QuantConnect.DataSource
         /// <returns>A clone of the object</returns>
         public override BaseData Clone()
         {
-            return new MyCustomDataType
+            return new CryptoSlamNFTSales()
             {
                 Symbol = Symbol,
                 Time = Time,
                 EndTime = EndTime,
-                SomeCustomProperty = SomeCustomProperty,
+                TotalTransactions = TotalTransactions,
+                UniqueBuyers = UniqueBuyers,
+                UniqueSellers = UniqueSellers,
+                TotalPriceUSD = TotalPriceUSD,
             };
         }
 
@@ -98,13 +123,13 @@ namespace QuantConnect.DataSource
         /// <returns>false</returns>
         public override bool RequiresMapping()
         {
-            return true;
+            return false;
         }
 
         /// <summary>
         /// Indicates whether the data is sparse.
         /// If true, we disable logging for missing files
-        /// </summary>
+        /// </summary> 
         /// <returns>true</returns>
         public override bool IsSparseData()
         {
@@ -116,7 +141,7 @@ namespace QuantConnect.DataSource
         /// </summary>
         public override string ToString()
         {
-            return $"{Symbol} - {SomeCustomProperty}";
+            return $"{Symbol} - Transactions {TotalTransactions} - Unique Buyers {UniqueBuyers} - Unique Seller{UniqueSellers} - Sales {TotalPriceUSD}";
         }
 
         /// <summary>
