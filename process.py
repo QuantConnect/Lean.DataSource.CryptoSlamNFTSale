@@ -1,5 +1,6 @@
 import csv
 import json
+import pathlib
 import os
 import urllib.request 
 
@@ -10,18 +11,11 @@ URLs = {"ETHUSD": "Ethereum",
         "MATICBUSD": "Polygon",
         "THETABUSD": "Theta"}
 
-destination_folder = "/temp-output-directory"
-for path in [destination_folder, 
-            f"{destination_folder}/alternative", 
-            f"{destination_folder}/alternative/cryptoslam", 
-            f"{destination_folder}/alternative/cryptoslam/nftsales"]:
-    if os.path.exists(path):
-        pass
-    else:
-        os.mkdir(path)
-
 base_link = "https://api2.cryptoslam.io/api/nft-indexes/"
-output_directory = f"{destination_folder}/alternative/cryptoslam/nftsales/"
+
+destination_folder = pathlib.Path('/temp-output-directory/alternative/cryptoslam/nftsales')
+# objectives:# download data from API -> temp folder or in memory. Output processed data to /temp-output-directory/alternative/cryptoslam/nftsales/symbol.csv
+destination_folder.mkdir(parents=True, exist_ok=True)
 
 def download_cryptoslam_nftsales(ticker: str):
     
@@ -37,7 +31,7 @@ def download_cryptoslam_nftsales(ticker: str):
             daily_result = [x['dailySummaries'] for x in result.values()]
             daily_result_dict = {key: value for d in daily_result for key, value in d.items()}
 
-            with open(os.path.join(output_directory, f"{ticker.lower()}.csv"), "w", newline='', encoding='utf-8') as csv_file:
+            with open(destination_folder / f"{ticker.lower()}.csv"), "w", newline='', encoding='utf-8') as csv_file:
                 writer = csv.writer(csv_file)
                 for key, value in daily_result_dict.items():
                     writer.writerow([key, value['totalTransactions'], value['uniqueBuyers'], value['uniqueSellers'], value['totalPriceUSD']])
@@ -55,7 +49,3 @@ def download_cryptoslam_nftsales(ticker: str):
 
 for key in URLs:
     download_cryptoslam_nftsales(key)
-
-# For saving in AWS cloud
-cmd = f"aws s3 sync {destination_folder}/ s3://cache.quantconnect.com/"
-os.system(cmd)
