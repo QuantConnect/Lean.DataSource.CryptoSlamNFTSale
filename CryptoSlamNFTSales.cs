@@ -94,8 +94,8 @@ namespace QuantConnect.DataSource
                 UniqueBuyers = int.Parse(csv[2], System.Globalization.NumberStyles.Float),
                 UniqueSellers = int.Parse(csv[3], System.Globalization.NumberStyles.Float),
                 TotalPriceUSD = decimal.Parse(csv[4], System.Globalization.NumberStyles.Float),
-                Time = parsedDate - TimeSpan.FromHours(28),      // Consolidated at 00:00 UTC for the previous day data
-                EndTime = parsedDate - TimeSpan.FromHours(4)
+                Time = parsedDate - TimeSpan.FromDays(1),
+                EndTime = parsedDate
             };
         }
 
