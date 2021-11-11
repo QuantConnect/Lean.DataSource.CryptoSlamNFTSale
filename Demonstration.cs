@@ -1,4 +1,4 @@
-﻿/*
+/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
  *
@@ -14,31 +14,39 @@
  *
 */
 
+using System.Linq;
 using QuantConnect.Data;
 using QuantConnect.Util;
-using QuantConnect.Orders;
 using QuantConnect.Algorithm;
 using QuantConnect.DataSource;
 
 namespace QuantConnect.DataLibrary.Tests
 {
     /// <summary>
-    /// Example algorithm using the custom data type as a source of alpha
+    /// Example algorithm using NFT Sales data as a source of alpha
     /// </summary>
-    public class CustomDataAlgorithm : QCAlgorithm
+    public class CryptoSlamNFTSalesAlgorithm : QCAlgorithm
     {
-        private Symbol _customDataSymbol;
-        private Symbol _equitySymbol;
+        private Symbol _nftSalesSymbol;
+        private Symbol _ethSymbol;
+        private decimal? _lastAvgSales = null;
 
         /// <summary>
         /// Initialise the data and resolution required, as well as the cash and start-end dates for your algorithm. All algorithms must initialized.
         /// </summary>
         public override void Initialize()
         {
-            SetStartDate(2013, 10, 07);  //Set Start Date
-            SetEndDate(2013, 10, 11);    //Set End Date
-            _equitySymbol = AddEquity("SPY").Symbol;
-            _customDataSymbol = AddData<MyCustomDataType>(_equitySymbol).Symbol;
+            SetStartDate(2020, 10, 07);  //Set Start Date
+            SetEndDate(2020, 10, 11);    //Set End Date
+            SetCash(10000);
+            
+            _ethSymbol = AddCrypto("ETHUSD", Resolution.Minute).Symbol; 
+            // Requesting data
+            _nftSalesSymbol = AddData<CryptoSlamNFTSales>(_ethSymbol).Symbol;
+
+            // Historical data
+            var history = History<CryptoSlamNFTSales>(_nftSalesSymbol, 60, Resolution.Daily);
+            Debug($"We got {history.Count()} items from our history request for {_ethSymbol} CryptoSlam NFT Sales data");
         }
 
         /// <summary>
@@ -47,30 +55,23 @@ namespace QuantConnect.DataLibrary.Tests
         /// <param name="slice">Slice object keyed by symbol containing the stock data</param>
         public override void OnData(Slice slice)
         {
-            var data = slice.Get<MyCustomDataType>();
+            // Retrieving data
+            var data = slice.Get<CryptoSlamNFTSales>();
             if (!data.IsNullOrEmpty())
             {
-                // based on the custom data property we will buy or short the underlying equity
-                if (data[_customDataSymbol].SomeCustomProperty == "buy")
-                {
-                    SetHoldings(_equitySymbol, 1);
-                }
-                else if (data[_customDataSymbol].SomeCustomProperty == "sell")
-                {
-                    SetHoldings(_equitySymbol, -1);
-                }
-            }
-        }
+                var currentAvgSales = data[_nftSalesSymbol].TotalPriceUSD / data[_nftSalesSymbol].TotalTransactions;
 
-        /// <summary>
-        /// Order fill event handler. On an order fill update the resulting information is passed to this method.
-        /// </summary>
-        /// <param name="orderEvent">Order event details containing details of the events</param>
-        public override void OnOrderEvent(OrderEvent orderEvent)
-        {
-            if (orderEvent.Status.IsFill())
-            {
-                Debug($"Purchased Stock: {orderEvent.Symbol}");
+                // comparing the average sales changes, we will buy ethereum or hold cash
+                if (_lastAvgSales != null && currentAvgSales > _lastAvgSales)
+                {
+                    SetHoldings(_ethSymbol, 1);
+                }
+                else
+                {
+                    SetHoldings(_ethSymbol, 0);
+                }
+
+                _lastAvgSales = currentAvgSales;
             }
         }
     }
