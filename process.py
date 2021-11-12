@@ -34,7 +34,8 @@ def download_cryptoslam_nftsales(ticker: str):
             with open(destination_folder / f"{ticker.lower()}.csv", "w", newline='', encoding='utf-8') as csv_file:
                 writer = csv.writer(csv_file)
                 for key, value in daily_result_dict.items():
-                    writer.writerow([key, value['totalTransactions'], value['uniqueBuyers'], value['uniqueSellers'], value['totalPriceUSD']])
+                    if not value['isRollingHoursData']:
+                        writer.writerow([key, value['totalTransactions'], value['uniqueBuyers'], value['uniqueSellers'], value['totalPriceUSD']])
             
             print(f"Downloaded '{site}' successfully")
             return
