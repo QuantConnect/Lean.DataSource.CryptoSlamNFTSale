@@ -31,11 +31,13 @@ def download_cryptoslam_nftsales(ticker: str):
             daily_result = [x['dailySummaries'] for x in result.values()]
             daily_result_dict = {key: value for d in daily_result for key, value in d.items()}
 
+            # Drop the last row as it is still rolling, not consolidated
+            daily_result_dict.popitem()
+
             with open(destination_folder / f"{ticker.lower()}.csv", "w", newline='', encoding='utf-8') as csv_file:
                 writer = csv.writer(csv_file)
                 for key, value in daily_result_dict.items():
-                    if not value['isRollingHoursData']:
-                        writer.writerow([key, value['totalTransactions'], value['uniqueBuyers'], value['uniqueSellers'], value['totalPriceUSD']])
+                    writer.writerow([key, value['totalTransactions'], value['uniqueBuyers'], value['uniqueSellers'], value['totalPriceUSD']])
             
             print(f"Downloaded '{site}' successfully")
             return
