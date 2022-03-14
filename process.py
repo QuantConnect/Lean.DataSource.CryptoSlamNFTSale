@@ -4,12 +4,17 @@ import pathlib
 import os
 import urllib.request 
 
-URLs = {"ETHUSD": "Ethereum",
-        "WAXUSD": "Wax",
-        # The below symbols are only available in Binance, where USD -> BUSD
-        "SOLBUSD": "Solana",
-        "MATICBUSD": "Polygon",
-        "THETABUSD": "Theta"}
+URLs = {"AVAXUSD": "Avalanche",
+        "CROUSD": "Cronos",
+        "ETHUSD": "Ethereum",
+        "FTMUSD": "Fantom",
+        "FLOWUSD": "Flow",
+        "MATICUSD": "Polygon",
+        "SOLUSD": "Solana",
+        "XTZUSD": "Tezos",
+        "THETAUSD": "Theta",
+        "WAVESUSD": "Waves",
+        "WAXUSD": "Wax"}
 
 base_link = "https://api2.cryptoslam.io/api/nft-indexes/"
 
