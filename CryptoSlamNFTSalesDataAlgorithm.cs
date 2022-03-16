@@ -39,10 +39,10 @@ namespace QuantConnect.DataLibrary.Tests
             SetStartDate(2020, 10, 07);  //Set Start Date
             SetEndDate(2020, 10, 11);    //Set End Date
             SetCash(10000);
-            
+
             _ethSymbol = AddCrypto("ETHUSD", Resolution.Minute, Market.Bitfinex).Symbol; 
             // Requesting data
-            _nftSalesSymbol = AddData<CryptoSlamNFTSales>(_ethSymbol).Symbol;
+            _nftSalesSymbol = AddData<CryptoSlamNFTSales>("ETH").Symbol;
 
             // Historical data
             var history = History<CryptoSlamNFTSales>(_nftSalesSymbol, 60, Resolution.Daily);

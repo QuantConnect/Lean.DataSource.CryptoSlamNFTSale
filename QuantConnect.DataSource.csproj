@@ -18,7 +18,8 @@
     <Compile Remove="tests\**" />
     <EmbeddedResource Remove="tests\**" />
     <None Remove="tests\**" />
-    <Compile Remove="Demonstration.cs" />
+    <Compile Remove="CryptoSlamNFTSalesDataAlgorithm.cs" />
+    <None Remove="CryptoSlamNFTSalesDataAlgorithm.py" />
     <None Remove=".gitignore" />
     <None Remove="process.py" />
   </ItemGroup>
