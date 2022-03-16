@@ -1,8 +1,6 @@
 import csv
 import json
 import pathlib
-import os
-import shutil
 import urllib.request 
 
 URLs = {"AVAX": "Avalanche",
@@ -20,7 +18,6 @@ URLs = {"AVAX": "Avalanche",
 base_link = "https://api2.cryptoslam.io/api/nft-indexes/"
 
 destination_folder = pathlib.Path('/temp-output-directory/alternative/cryptoslam/nftsales')
-
 # objectives:# download data from API -> temp folder or in memory. Output processed data to /temp-output-directory/alternative/cryptoslam/nftsales/symbol.csv
 destination_folder.mkdir(parents=True, exist_ok=True)
 
@@ -38,9 +35,7 @@ def download_cryptoslam_nftsales(ticker: str):
             daily_result = [x['dailySummaries'] for x in result.values()]
             daily_result_dict = {key.split("T")[0].replace("-", ""): value for d in daily_result for key, value in d.items()}
 
-            target = destination_folder / f"{ticker.lower()}.csv"
-            
-            with open(target, "w", newline='', encoding='utf-8') as csv_file:
+            with open(destination_folder / f"{ticker.lower()}.csv", "w", newline='', encoding='utf-8') as csv_file:
                 writer = csv.writer(csv_file)
                 for key, value in daily_result_dict.items():
                     if not value['isRollingHoursData']:

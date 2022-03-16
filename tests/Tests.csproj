@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\CryptoSlamNFTSalesDataAlgorithm.cs" />
-    <None Include="..\CryptoSlamNFTSalesDataAlgorithm.py" />
+    <Content Include="..\CryptoSlamNFTSalesDataAlgorithm.py" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="protobuf-net" Version="3.0.29" />
