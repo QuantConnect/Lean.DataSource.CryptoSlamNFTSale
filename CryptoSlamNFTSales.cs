@@ -15,11 +15,12 @@
 */
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Globalization;
 using NodaTime;
 using ProtoBuf;
-using System.IO;
 using QuantConnect.Data;
-using System.Collections.Generic;
 
 namespace QuantConnect.DataSource
 {
@@ -33,19 +34,19 @@ namespace QuantConnect.DataSource
         /// The number of NFT transaction made within this blockchain
         /// </summary>
         [ProtoMember(10)]
-        public int TotalTransactions { get; set; }
+        public long TotalTransactions { get; set; }
 
         /// <summary>
         /// The number of unique buyers of NFT within this blockchain
         /// </summary>
         [ProtoMember(11)]
-        public int UniqueBuyers { get; set; }
+        public long UniqueBuyers { get; set; }
 
         /// <summary>
         /// The number of unique sellers of NFT within this blockchain
         /// </summary>
         [ProtoMember(12)]
-        public int UniqueSellers { get; set; }
+        public long UniqueSellers { get; set; }
 
         /// <summary>
         /// The total transaction value (in USD) of NFT within this blockchain
@@ -53,6 +54,16 @@ namespace QuantConnect.DataSource
         [ProtoMember(13)]
         public decimal TotalPriceUSD { get; set; }
 
+        /// <summary>
+        /// Time passed between the date of the data and the time the data became available to us
+        /// </summary>
+        public TimeSpan Period { get; set; } = TimeSpan.FromDays(1);
+
+        /// <summary>
+        /// Time the data became available
+        /// </summary>
+        public override DateTime EndTime => Time + Period;
+        
         /// <summary>
         /// Return the URL string source of the file. This will be converted to a stream
         /// </summary>
@@ -85,17 +96,19 @@ namespace QuantConnect.DataSource
         public override BaseData Reader(SubscriptionDataConfig config, string line, DateTime date, bool isLiveMode)
         {
             var csv = line.Split(',');
+            var price = decimal.Parse(csv[4], NumberStyles.Any, CultureInfo.InvariantCulture);
 
-            var parsedDate = Parse.DateTimeExact(csv[0], "yyyy-MM-dd'T'HH:mm:ss");
+            var parsedDate = Parse.DateTimeExact(csv[0], "yyyyMMdd");
             return new CryptoSlamNFTSales()
             {
+                TotalTransactions = long.Parse(csv[1]),
+                UniqueBuyers = long.Parse(csv[2]),
+                UniqueSellers = long.Parse(csv[3]),
+                TotalPriceUSD = price,
+
                 Symbol = config.Symbol,
-                TotalTransactions = int.Parse(csv[1], System.Globalization.NumberStyles.Float),
-                UniqueBuyers = int.Parse(csv[2], System.Globalization.NumberStyles.Float),
-                UniqueSellers = int.Parse(csv[3], System.Globalization.NumberStyles.Float),
-                TotalPriceUSD = decimal.Parse(csv[4], System.Globalization.NumberStyles.Float),
-                Time = parsedDate - TimeSpan.FromDays(1),
-                EndTime = parsedDate
+                Value = price,
+                Time = parsedDate - Period
             };
         }
 
@@ -107,9 +120,9 @@ namespace QuantConnect.DataSource
         {
             return new CryptoSlamNFTSales()
             {
+                Value = Value,
                 Symbol = Symbol,
                 Time = Time,
-                EndTime = EndTime,
                 TotalTransactions = TotalTransactions,
                 UniqueBuyers = UniqueBuyers,
                 UniqueSellers = UniqueSellers,

@@ -1,15 +1,19 @@
 import csv
 import json
 import pathlib
-import os
 import urllib.request 
 
-URLs = {"ETHUSD": "Ethereum",
-        "WAXUSD": "Wax",
-        # The below symbols are only available in Binance, where USD -> BUSD
-        "SOLBUSD": "Solana",
-        "MATICBUSD": "Polygon",
-        "THETABUSD": "Theta"}
+URLs = {"AVAX": "Avalanche",
+        "CRO": "Cronos",
+        "ETH": "Ethereum",
+        "FTM": "Fantom",
+        "FLOW": "Flow",
+        "MATIC": "Polygon",
+        "SOL": "Solana",
+        "XTZ": "Tezos",
+        "THETA": "Theta",
+        "WAVES": "Waves",
+        "WAX": "Wax"}
 
 base_link = "https://api2.cryptoslam.io/api/nft-indexes/"
 
@@ -29,17 +33,18 @@ def download_cryptoslam_nftsales(ticker: str):
             result = json.load(urllib.request.urlopen(f"{base_link}{site}"))
 
             daily_result = [x['dailySummaries'] for x in result.values()]
-            daily_result_dict = {key: value for d in daily_result for key, value in d.items()}
+            # Datetime fetched is in form of yyyy-MM-dd"T"HH:MM:SS, convert into yyyyMMdd
+            daily_result_dict = {key.split("T")[0].replace("-", ""): value for d in daily_result for key, value in d.items()}
 
             with open(destination_folder / f"{ticker.lower()}.csv", "w", newline='', encoding='utf-8') as csv_file:
                 writer = csv.writer(csv_file)
                 for key, value in daily_result_dict.items():
                     if not value['isRollingHoursData']:
                         writer.writerow([key, value['totalTransactions'], value['uniqueBuyers'], value['uniqueSellers'], value['totalPriceUSD']])
-            
+
             print(f"Downloaded '{site}' successfully")
             return
-        
+
         except:
             if i == 5:
                 print(f"Failed to download data from {base_link}{site} (5 / 5) - Exiting")
