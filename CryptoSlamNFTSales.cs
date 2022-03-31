@@ -55,6 +55,16 @@ namespace QuantConnect.DataSource
         public decimal TotalPriceUSD { get; set; }
 
         /// <summary>
+        /// Time passed between the date of the data and the time the data became available to us
+        /// </summary>
+        public TimeSpan Period { get; set; } = TimeSpan.FromDays(1);
+
+        /// <summary>
+        /// Time the data became available
+        /// </summary>
+        public override DateTime EndTime => Time + Period;
+        
+        /// <summary>
         /// Return the URL string source of the file. This will be converted to a stream
         /// </summary>
         /// <param name="config">Configuration object</param>
@@ -98,8 +108,7 @@ namespace QuantConnect.DataSource
 
                 Symbol = config.Symbol,
                 Value = price,
-                Time = parsedDate - TimeSpan.FromDays(1),
-                EndTime = parsedDate
+                Time = parsedDate - Period
             };
         }
 
@@ -114,7 +123,6 @@ namespace QuantConnect.DataSource
                 Value = Value,
                 Symbol = Symbol,
                 Time = Time,
-                EndTime = EndTime,
                 TotalTransactions = TotalTransactions,
                 UniqueBuyers = UniqueBuyers,
                 UniqueSellers = UniqueSellers,

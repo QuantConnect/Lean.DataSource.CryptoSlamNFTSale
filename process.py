@@ -33,6 +33,7 @@ def download_cryptoslam_nftsales(ticker: str):
             result = json.load(urllib.request.urlopen(f"{base_link}{site}"))
 
             daily_result = [x['dailySummaries'] for x in result.values()]
+            # Datetime fetched is in form of yyyy-MM-dd"T"HH:MM:SS, convert into yyyyMMdd
             daily_result_dict = {key.split("T")[0].replace("-", ""): value for d in daily_result for key, value in d.items()}
 
             with open(destination_folder / f"{ticker.lower()}.csv", "w", newline='', encoding='utf-8') as csv_file:
